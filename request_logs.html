@@ -175,7 +175,7 @@
         logsContainer.innerHTML = "<p style='text-align:center; color:#777;'>Fetching latest logs...</p>";
 
         try {
-          const response = await fetch("http://127.0.0.1:8000/fetch_request_logs", {
+          const response = await fetch("https://backend-workflow.vercel.app/fetch_request_logs", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
@@ -260,3 +260,4 @@
   </script>
 </body>
 </html>
+
