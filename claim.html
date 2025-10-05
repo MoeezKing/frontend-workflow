@@ -127,7 +127,7 @@
         };
 
         try {
-          const response = await fetch("http://127.0.0.1:8000/claim_request", {
+          const response = await fetch("https://backend-workflow.vercel.app/claim_request", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -154,3 +154,4 @@
   </script>
 </body>
 </html>
+
