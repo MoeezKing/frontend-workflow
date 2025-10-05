@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Claim Request</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, lch(30.07% 0.44 199.94), #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      width: 420px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #28a745;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #11481d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Claim Request Form</h2>
+    <form id="claimForm">
+      <label for="invoice_number">Invoice Number</label>
+      <input type="number" id="invoice_number" name="invoice_number" min="1" required>
+
+      <label for="claim_id">Claim ID</label>
+      <input type="number" id="claim_id" name="claim_id" min="1" required>
+
+      <label for="policy_number">Policy Number</label>
+      <input type="text" id="policy_number" name="policy_number" required>
+
+      <label for="invoice_date">Invoice Date</label>
+      <input type="date" id="invoice_date" name="invoice_date" required>
+
+      <label for="admission_date">Admission Date</label>
+      <input type="date" id="admission_date" name="admission_date" required>
+
+      <label for="discharge_date">Discharge Date</label>
+      <input type="date" id="discharge_date" name="discharge_date" required>
+
+      <label for="service_type">Service Type</label>
+      <input type="text" id="service_type" name="service_type" required>
+
+      <label for="total_bill">Total Bill</label>
+      <input type="number" id="total_bill" name="total_bill" min="1" required>
+
+      <button type="submit">Submit Claim</button>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+
+      // ✅ Utility function to read cookies properly
+      function getCookie(name) {
+        const nameEQ = name + "=";
+        const ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) === " ") c = c.substring(1, c.length);
+          if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+        }
+        return null;
+      }
+
+      const form = document.getElementById("claimForm");
+
+      form.addEventListener("submit", async function(event) {
+        event.preventDefault();
+
+        const user_id = getCookie("user_id");
+        console.log("🔍 Cookie check:", document.cookie);
+        console.log("📦 Extracted user_id:", user_id);
+
+        if (!user_id) {
+          alert("User not logged in. Please log in first.");
+          window.location.href = "login.html"; // optional redirect
+          return;
+        }
+
+        const data = {
+          invoice_number: parseInt(document.getElementById("invoice_number").value),
+          claim_id: parseInt(document.getElementById("claim_id").value),
+          policy_number: document.getElementById("policy_number").value,
+          invoice_date: document.getElementById("invoice_date").value,
+          admission_date: document.getElementById("admission_date").value,
+          discharge_date: document.getElementById("discharge_date").value,
+          service_type: document.getElementById("service_type").value,
+          total_bill: parseInt(document.getElementById("total_bill").value)
+        };
+
+        try {
+          const response = await fetch("http://127.0.0.1:8000/claim_request", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-user-id": user_id
+            },
+            body: JSON.stringify(data)
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to submit claim request");
+          }
+
+          const result = await response.json();
+          alert("✅ Claim submitted successfully:\n" + JSON.stringify(result, null, 2));
+
+          form.reset();
+
+        } catch (err) {
+          console.error(err);
+          alert("❌ Error submitting claim: " + err.message);
+        }
+      });
+    });
+  </script>
+</body>
+</html>

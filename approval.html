@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Approval Request</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, lch(30.07% 0.44 199.94), #00f2fe);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .container {
+      background: #fff;
+      padding: 25px 30px;
+      border-radius: 12px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+      width: 420px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 6px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background: #5d7506;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .message {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 14px;
+    }
+    .error { color: red; }
+    .success { color: green; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Approval Request Form</h2>
+    <form id="approvalForm">
+      <label for="policy_number">Policy Number</label>
+      <input type="text" id="policy_number" name="policy_number" required>
+
+      <label for="policy_holder">Policy Holder</label>
+      <input type="text" id="policy_holder" name="policy_holder" required>
+
+      <label for="DOB">Date of Birth</label>
+      <input type="date" id="DOB" name="DOB" required>
+
+      <label for="start_date">Policy Start Date</label>
+      <input type="date" id="start_date" name="start_date" required>
+
+      <label for="expiry_date">Policy Expiry Date</label>
+      <input type="date" id="expiry_date" name="expiry_date" required>
+
+      <label for="requested_amount">Requested Amount</label>
+      <input type="number" id="requested_amount" name="requested_amount" min="1" required>
+
+      <button type="submit">Submit Request</button>
+      <div id="msg" class="message"></div>
+    </form>
+  </div>
+
+  <script>
+    // ✅ Function to get cookie value
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("approvalForm");
+      const msg = document.getElementById("msg");
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        msg.textContent = "";
+        msg.className = "message";
+
+        const user_id = getCookie("user_id");
+
+        if (!user_id) {
+          msg.textContent = "User not logged in. Please log in first.";
+          msg.classList.add("error");
+          return;
+        }
+
+        const data = {
+          policy_number: document.getElementById("policy_number").value,
+          policy_holder: document.getElementById("policy_holder").value,
+          DOB: document.getElementById("DOB").value,
+          start_date: document.getElementById("start_date").value,
+          expiry_date: document.getElementById("expiry_date").value,
+          requested_amount: parseInt(document.getElementById("requested_amount").value)
+        };
+
+        try {
+          const response = await fetch("http://127.0.0.1:8000/approval_request", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-User-Id": user_id   // ✅ Send real user_id from cookie
+            },
+            body: JSON.stringify(data)
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            msg.textContent = "Request submitted successfully!";
+            msg.classList.add("success");
+            form.reset();
+          } else {
+            msg.textContent = result.message || "Failed to submit request.";
+            msg.classList.add("error");
+          }
+        } catch (err) {
+          console.error(err);
+          msg.textContent = "Error submitting request: " + err.message;
+          msg.classList.add("error");
+        }
+      });
+    });
+  </script>
+</body>
+</html>

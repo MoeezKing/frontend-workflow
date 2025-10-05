@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, lch(30.07% 0.44 199.94), #00f2fe);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .dashboard {
+      background: rgba(0,0,0,0.1);
+      padding: 2rem;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(226, 222, 222, 0.1);
+      text-align: center;
+      width: 400px;
+    }
+
+    h2 {
+      margin-bottom: 1.5rem;
+      color: #ebe1e1;
+    }
+
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      color: #fffdfd;
+      transition: 0.3s;
+    }
+
+    .btn-approval { background: #4ca3f0; }
+    .btn-approval:hover { background: #00c6ff; }
+
+    .btn-claim { background: #3ccf6d; }
+    .btn-claim:hover { background: #38c172; }
+
+    .btn-logs { background: #ad5c6c; }
+    .btn-logs:hover { background: #30141b; }
+  </style>
+</head>
+<body>
+  <div class="dashboard">
+    <h2>Dashboard</h2>
+    <button class="btn btn-approval" onclick="goToPage('approval.html')">Approval Request</button>
+    <button class="btn btn-claim" onclick="goToPage('claim.html')">Claim Request</button>
+    <button class="btn btn-logs" onclick="goToPage('request_logs.html')">Request Logs</button>
+  </div>
+
+  <script>
+    function goToPage(page) {
+      window.location.href = page;
+    }
+  </script>
+</body>
+</html>
